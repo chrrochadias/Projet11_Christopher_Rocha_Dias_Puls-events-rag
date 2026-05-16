@@ -1,0 +1,25 @@
+# =============================================================================
+# Puls-Events RAG - Requirements
+# Python >= 3.10 requis (contrainte langchain-mistralai)
+# =============================================================================
+
+# --- LangChain (architecture modulaire depuis v0.2) ---
+langchain>=0.3,<2.0
+langchain-core>=0.3
+langchain-community>=0.3        # contient l'intégration FAISS
+langchain-mistralai>=0.2        # intégration officielle Mistral
+
+# --- Vector store ---
+faiss-cpu>=1.8
+
+# --- Data ingestion & manipulation ---
+requests>=2.31                  # API OpenAgenda
+pandas>=2.0                     # exploration & manipulation tabulaire
+python-dotenv>=1.0              # gestion des secrets (.env)
+
+# --- Tests ---
+pytest>=8.0
+
+# --- Dev (notebooks) ---
+jupyter
+ipykernel
