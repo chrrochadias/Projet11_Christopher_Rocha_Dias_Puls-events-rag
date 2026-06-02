@@ -20,6 +20,10 @@ python-dotenv>=1.0              # gestion des secrets (.env)
 # --- Tests ---
 pytest>=8.0
 
+# --- Visualisation (notebooks EDA & rapport) ---
+matplotlib>=3.8
+seaborn>=0.13       # graphes plus jolis, utile pour le rapport technique
+
 # --- Dev (notebooks) ---
 jupyter
 ipykernel
