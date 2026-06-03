@@ -6,11 +6,29 @@
 
 ## 🎯 Contexte
 
-Puls-Events est une plateforme de découverte d'événements culturels en temps réel. Ce POC démontre la faisabilité d'un chatbot intelligent capable de fournir des recommandations personnalisées à partir d'un corpus d'événements issus d'**OpenAgenda**, en s'appuyant sur :
+Puls-Events est une plateforme web de découverte d'événements culturels en temps réel. Elle agrège des sources publiques comme [OpenAgenda](https://openagenda.com/) pour proposer aux utilisateurs des événements adaptés à leurs préférences, filtrables par lieu et par période.
 
-- **LangChain** — orchestration des composants LLM
-- **Mistral AI** — modèle génératif (via API)
+Ce POC démontre la faisabilité d'un **chatbot intelligent** capable de fournir des recommandations personnalisées à partir d'un corpus d'événements, en s'appuyant sur :
+
+- **LangChain** — framework d'orchestration des composants LLM
+- **Mistral AI** — modèle d'embedding (`mistral-embed`) + modèle générateur (`mistral-small-latest`)
 - **FAISS** — base vectorielle locale pour la recherche sémantique
+- **RAGAS** — framework d'évaluation des systèmes RAG
+
+---
+
+## 🎯 Objectifs
+
+Ce POC répond à trois objectifs structurants :
+
+1. **Démontrer la faisabilité technique** d'un système RAG complet (retrieval + augmentation + génération) sur des données réelles d'événements culturels publics.
+2. **Valider la qualité métier** des réponses générées via une démarche d'évaluation rigoureuse (jeu de test annoté + métriques RAGAS).
+3. **Identifier les limites architecturales** du système naïf et proposer des recommandations chiffrées pour la version production.
+
+Le POC est conçu pour être :
+- **Reproductible** : `git clone` + `.env` + 3 commandes → système opérationnel
+- **Agnostique de la source** : changer la valeur `AGENDA_UID` permet de cibler n'importe quel agenda OpenAgenda
+- **Testable** : tests unitaires couvrant le préprocessing et le contrat de données (fraîcheur < 1 an + périmètre géographique)
 
 ---
 
@@ -19,9 +37,9 @@ Puls-Events est une plateforme de découverte d'événements culturels en temps 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
 │  OpenAgenda  │────▶│ Préprocessing│────▶│   Embeddings │
-│  (source)    │     │ + Chunking   │     │  (Mistral)   │
-└──────────────┘     └──────────────┘     └──────┬───────┘
-                                                 │
+│  (source)    │     │ + Filtres    │     │  (Mistral)   │
+└──────────────┘     │ qualité/géo  │     └──────┬───────┘
+                     └──────────────┘            │
                                                  ▼
                                           ┌──────────────┐
                                           │ FAISS Index  │
@@ -31,29 +49,63 @@ Puls-Events est une plateforme de découverte d'événements culturels en temps 
    Question utilisateur ──▶ Embedding ──▶ Top-K retrieval
                                                  │
                                                  ▼
-                                          ┌──────────────┐
-                                          │   Mistral    │
-                                          │  (génération)│
-                                          └──────┬───────┘
+                                       Prompt augmenté + Mistral
                                                  ▼
-                                          Réponse augmentée
+                                          Réponse + sources
 ```
 
 ---
 
-## 🚀 Installation
+## 📂 Structure du projet
+
+```
+puls-events-rag/
+├── src/                            # Modules réutilisables
+│   ├── config.py                   # Configuration centralisée (.env, constantes)
+│   ├── data_ingestion.py           # Fetch OpenAgenda + filtrage qualité
+│   ├── preprocessing.py            # Composition texte embeddable + métadonnées
+│   ├── vector_store.py             # Gestion index FAISS (build/load/cache)
+│   ├── rag_chain.py                # Chaîne RAG complète (LCEL)
+│   └── evaluation.py               # Pipeline d'évaluation RAGAS
+├── scripts/                        # Points d'entrée CLI
+│   ├── build_index.py              # Reconstruit la base vectorielle
+│   ├── run_evaluation.py           # Lance l'évaluation RAGAS
+│   └── annotation_helper.py        # Assistant d'annotation des Q/R
+├── tests/                          # Tests automatisés (pytest)
+│   ├── test_preprocessing.py       # Tests unitaires fonctions pures
+│   ├── test_freshness.py           # Test fraîcheur des données (< 1 an)
+│   ├── test_geography.py           # Test périmètre géographique (Paris)
+│   └── conftest.py                 # Configuration pytest
+├── data/
+│   ├── raw/                        # Événements OpenAgenda bruts (JSON)
+│   ├── processed/                  # Données nettoyées
+│   ├── faiss_index/                # Index vectoriel sérialisé (généré)
+│   └── evaluation/                 # Jeu Q/R annoté + rapports RAGAS
+├── notebooks/
+│   └── 01_exploration_openagenda.ipynb   # EDA initiale
+├── docs/                           # Rapport technique + présentation
+├── requirements.txt                # Dépendances Python (pip)
+├── .env.example                    # Template variables d'environnement
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 🚀 Installation et reproduction
 
 ### Prérequis
 
-- **Python 3.10+**
+- **Python 3.10+** (testé sur Python 3.12)
 - Une **clé API Mistral** ([console.mistral.ai](https://console.mistral.ai/api-keys/))
+- Une **clé publique OpenAgenda** ([openagenda.com](https://openagenda.com/))
 
-### Étapes
+### Installation pas à pas
 
 ```bash
-# 1. Cloner le repo
-git clone <url-du-repo>
-cd puls-events-rag
+# 1. Cloner le dépôt
+git clone chrrochadias/Projet11_Christopher_Rocha_Dias_Puls-events-rag
+cd Projet11_Christopher_Rocha_Dias_Puls-events-rag
 
 # 2. Créer et activer l'environnement virtuel
 python3 -m venv venv
@@ -66,111 +118,144 @@ pip install -r requirements.txt
 
 # 4. Configurer les secrets
 cp .env.example .env
-# Éditer .env et remplir MISTRAL_API_KEY
+# Éditer .env et renseigner :
+#   - MISTRAL_API_KEY=...
+#   - OPENAGENDA_PUBLIC_KEY=...
 
 # 5. Vérifier l'installation
-python -c "import langchain, faiss; from langchain_mistralai import ChatMistralAI; print('OK')"
+python -c "import langchain, faiss; from langchain_mistralai import ChatMistralAI; print('Stack OK')"
+```
+
+### Pipeline complet de mise en service
+
+```bash
+# Étape 1 : Ingérer les événements + reconstruire l'index vectoriel
+python scripts/build_index.py
+
+# Étape 2 : Tester le système en posant une question
+python -m src.rag_chain "Y a-t-il des conférences sur la spiritualité ?"
+
+# Étape 3 : Lancer les tests automatisés
+pytest tests/ -v
+
+# Étape 4 (optionnel) : Lancer l'évaluation RAGAS
+python scripts/run_evaluation.py
 ```
 
 ---
 
-## 📂 Structure du projet
-
-```
-puls-events-rag/
-├── src/                        # Modules réutilisables
-│   ├── config.py               # Constantes (région, dates, modèles)
-│   ├── data_ingestion.py       # Récupération OpenAgenda
-│   ├── preprocessing.py        # Nettoyage + chunking
-│   ├── vector_store.py         # Gestion FAISS
-│   ├── rag_chain.py            # La chaîne LangChain
-│   └── evaluation.py           # Métriques d'évaluation
-├── scripts/                    # Points d'entrée exécutables
-│   ├── build_index.py          # Reconstruit la base vectorielle
-│   └── run_demo.py             # Lance la démo live
-├── tests/                      # Tests unitaires (pytest)
-│   ├── test_freshness.py       # Événements < 1 an
-│   └── test_geography.py       # Périmètre géographique
-├── data/
-│   ├── raw/                    # Données OpenAgenda brutes
-│   ├── processed/              # Données nettoyées
-│   └── faiss_index/            # Index vectoriel sérialisé
-├── notebooks/                  # Exploration
-├── docs/                       # Rapport + présentation
-├── requirements.txt
-├── .env.example
-└── README.md
-```
-
----
-
-## 🔧 Utilisation
+## 🔧 Utilisation détaillée
 
 ### Reconstruire la base vectorielle
 
 ```bash
+# Build avec cache (réutilise data/raw/)
 python scripts/build_index.py
+
+# Build complet avec re-fetch OpenAgenda
+python scripts/build_index.py --refresh
+
+# Limiter le nombre d'événements
+python scripts/build_index.py --n 100
 ```
 
-Ce script télécharge les événements OpenAgenda du périmètre configuré, applique le préprocessing, génère les embeddings via Mistral et sauvegarde l'index FAISS sur disque.
-
-### Lancer la démo
+### Interroger le RAG
 
 ```bash
-python scripts/run_demo.py
+# Question par défaut
+python -m src.rag_chain
+
+# Question personnalisée
+python -m src.rag_chain "Quels concerts de musique classique sont prévus ?"
 ```
 
 ### Lancer les tests
 
 ```bash
+# Tous les tests
 pytest tests/ -v
+
+# Tests unitaires uniquement (rapides)
+pytest tests/test_preprocessing.py -v
+
+# Tests de contrat de données (nécessite l'index construit)
+pytest tests/test_freshness.py tests/test_geography.py -v
+```
+
+### Évaluer la qualité du RAG
+
+```bash
+# Évaluation complète avec RAGAS (10-15 min)
+python scripts/run_evaluation.py
+
+# Avec top-K personnalisé
+python scripts/run_evaluation.py --k 6
 ```
 
 ---
 
-## 📊 Périmètre du POC
+## 📊 Configuration du POC
 
-| Paramètre | Valeur |
-|-----------|--------|
-| Région géographique | _(à définir)_ |
-| Fraîcheur des données | < 365 jours |
-| Source | OpenAgenda |
-| Volume estimé | _(à mesurer)_ |
-
----
-
-## 📐 Choix techniques
-
-_(Section à compléter au fil du build — sera la base du rapport technique.)_
-
-| Composant | Choix | Justification |
-|-----------|-------|---------------|
-| Vector store | FAISS (IndexFlatL2) | Local, gratuit, parfait pour POC |
-| Embeddings | Mistral Embed | Cohérence avec le LLM, qualité francophone |
-| LLM | Mistral (API) | Imposé par le cahier des charges, qualité FR |
-| Framework | LangChain | Orchestration standard du marché |
-| Chunking | _(à définir)_ | _(à justifier)_ |
+| Paramètre | Valeur | Localisation |
+|-----------|--------|--------------|
+| Agenda source | Diocèse de Paris (uid=82290100) | `src/config.py` |
+| Périmètre géographique | Paris (75xxx) | `src/config.py` |
+| Fraîcheur des données | < 365 jours | `src/config.py` |
+| Modèle d'embedding | `mistral-embed` (1024 dims) | `src/config.py` |
+| Modèle générateur | `mistral-small-latest` (température 0) | `src/config.py` |
+| Vector store | FAISS IndexFlatL2 (local) | `src/vector_store.py` |
+| Top-K retrieval | 4 | `src/rag_chain.py` |
+| Chunking | Aucun (1 événement = 1 document) | `src/preprocessing.py` |
+| Troncature max | 4000 caractères | `src/config.py` |
 
 ---
 
 ## 🧪 Évaluation
 
-Un jeu de données de questions/réponses annotées est utilisé pour mesurer la qualité du système. Voir `src/evaluation.py` et `docs/rapport_technique.docx`.
+Le système est évalué via [RAGAS](https://docs.ragas.io/) sur **15 questions annotées** couvrant 7 catégories : `thematic_search`, `format_specific`, `audience_specific`, `location_specific`, `specific_event`, `out_of_scope`, `ambiguous`.
+
+**4 métriques** sont mesurées :
+- **Faithfulness** : non-hallucination
+- **Answer Relevancy** : pertinence de la réponse à la question
+- **Context Precision** : qualité du retrieval (les bons docs en haut)
+- **Context Recall** : couverture du retrieval
+
+Les résultats détaillés sont disponibles dans `docs/rapport_technique.docx`.
 
 ---
 
 ## 📝 Livrables
 
 - [x] Environnement reproductible (`requirements.txt`, `.env.example`)
-- [ ] Pipeline RAG complet (`src/` + `scripts/`)
-- [ ] Tests unitaires (`tests/`)
-- [ ] Rapport technique (`docs/rapport_technique.docx`)
-- [ ] Présentation (`docs/presentation.pptx`)
-- [ ] Démo live (`scripts/run_demo.py`)
-- [ ] Jeu de Q/R annoté pour évaluation
+- [x] Pipeline d'ingestion + préprocessing (`src/`, `scripts/build_index.py`)
+- [x] Système RAG complet (`src/rag_chain.py`)
+- [x] Tests automatisés (`tests/` avec 34 tests)
+- [x] Évaluation RAGAS (`src/evaluation.py`, jeu Q/R annoté)
+- [x] Rapport technique (`docs/rapport_technique.docx`)
+- [x] Présentation (`docs/presentation.pptx`)
+
+---
+
+## 🛠️ Stack technique
+
+| Couche | Outil | Version |
+|--------|-------|---------|
+| Langage | Python | 3.10+ |
+| Framework LLM | LangChain | 0.3+ |
+| LLM & embeddings | Mistral AI | API |
+| Vector store | FAISS (CPU) | 1.8+ |
+| Évaluation | RAGAS | 0.2 |
+| Tests | pytest | 8.0+ |
+| Gestion deps | pip + venv | stdlib |
 
 ---
 
 ## 👤 Auteur
 
-Chris — Formation Data Engineering OpenClassrooms — Projet 11
+Christopher Rocha Dias — Formation Data Engineering OpenClassrooms — Projet 11
+
+---
+
+## 📄 Licence
+
+Ce projet est un livrable pédagogique dans le cadre de la formation OpenClassrooms.
