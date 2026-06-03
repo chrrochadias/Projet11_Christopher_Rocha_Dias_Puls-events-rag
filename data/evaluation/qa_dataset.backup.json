@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "agenda_source": "Diocèse de Paris (uid=82290100)",
+    "description": "Jeu de questions-réponses annotées pour l'évaluation RAGAS du POC Puls-Events.",
+    "annotation_level": "Niveau 2 — question + réponse de référence + sources attendues (uids)",
+    "note": "Les ground_truths sont à AFFINER manuellement à partir des vrais événements de votre base. Cette version est un squelette."
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "category": "thematic_search",
+      "difficulty": "easy",
+      "question": "Y a-t-il des conférences sur la spiritualité prévues prochainement ?",
+      "ground_truth": "Plusieurs événements liés à la spiritualité sont prévus, notamment des parcours de discernement, des conférences sur le dialogue inter-religieux et des temps de prière.",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q02",
+      "category": "thematic_search",
+      "difficulty": "medium",
+      "question": "Quels événements proposez-vous pour les familles ?",
+      "ground_truth": "Plusieurs événements s'adressent aux familles, incluant des messes des pères de famille, des activités pour parents et enfants, et des temps de partage en famille.",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q03",
+      "category": "audience_specific",
+      "difficulty": "medium",
+      "question": "Avez-vous des propositions pour les jeunes adultes ?",
+      "ground_truth": "Plusieurs propositions existent pour les jeunes adultes, incluant des soirées de discernement, des groupes de partage et des temps spirituels adaptés.",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q04",
+      "category": "thematic_search",
+      "difficulty": "easy",
+      "question": "Y a-t-il des conférences sur les questions de société et d'éthique ?",
+      "ground_truth": "Plusieurs conférences abordent les questions de société et d'éthique : 'Médecine, IA et écologie : sobriété ou démesure ?' le 5 juin 2026 sur les défis technologiques contemporains, 'La dette sociale : l'État peut-il porter seul la solidarité ?' le 9 juin 2026 sur le rôle de l'État, 'Et si les modèles de solidarité se trouvaient là où vous ne les attendiez pas ?' le 17 juin 2026 sur les quartiers populaires, 'Comment agir en chrétien dans le monde contemporain ?' (cours trimestriels), et 'Bâtir la confiance : quel dialogue inter-religieux pour nourrir la vie démocratique ?' le 25 juin 2026 sur les religions et la démocratie.",
+      "expected_source_uids": [
+        62267718,
+        66620762,
+        416773,
+        58658449,
+        84424718
+      ]
+    },
+    {
+      "id": "q05",
+      "category": "format_specific",
+      "difficulty": "medium",
+      "question": "Quels temps de prière sont organisés ?",
+      "ground_truth": "Plusieurs temps de prière sont organisés au sein du Diocèse de Paris : la 'Prière du Chapelet' du lundi au samedi à 13h à la chapelle Sainte-Geneviève (jusqu'au 4 juillet 2026), 'DIEU AGIT' veillée de prières le 3 juin 2026, 'Le jeudi j'adore' adoration silencieuse hebdomadaire à la chapelle Sainte-Geneviève, le 'Chapelet médité' tous les samedis à 17h15 avant la messe, la 'Célébration des premières communions' le 6 juin 2026, et la 'Fête du Sacré-Cœur' incluant veillée de l'Heure Sainte le 11 juin 2026. Ces propositions couvrent différentes formes de recueillement : chapelets, adorations, veillées et célébrations communautaires.",
+      "expected_source_uids": [
+        64303667,
+        60826130,
+        29381038,
+        90591566,
+        53508984,
+        30964734
+      ]
+    },
+    {
+      "id": "q06",
+      "category": "thematic_search",
+      "difficulty": "hard",
+      "question": "Que proposez-vous autour du dialogue inter-religieux ?",
+      "ground_truth": "Lors de l'annotation, j'ai dû arbitrer précisément ce qui constitue une 'formation' vs une 'conférence' — distinction fine que le retrieval ne fait pas naturellement, ce qui peut expliquer une partie des scores de Context Precision en deçà des attentes. Cette annotation manuelle révèle les subtilités sémantiques qu'un système RAG basé sur la similarité vectorielle ne capte pas parfaitement.",
+      "expected_source_uids": [
+        48129879,
+        91104921,
+        79710793
+      ]
+    },
+    {
+      "id": "q07",
+      "category": "format_specific",
+      "difficulty": "easy",
+      "question": "Y a-t-il des retraites ou pèlerinages prévus ?",
+      "ground_truth": "Plusieurs retraites et pèlerinages sont prévus : 'Retraite des jeunes se préparant à la Première Communion' le 6 juin 2026, 'Pèlerinage anniversaire de l'apparition de Notre Dame à Fatima' le 12 octobre 2026 (récurrent de mai à octobre), 'Pèlerinage cycliste' au départ de l'église Saint-Vincent-de-Paul le 20 juin 2026, et 'Marche Pèlerinage Au fil de l'eau' de la Seine au canal Saint-Martin le 13 juin 2026. Ces propositions couvrent retraites pour jeunes en préparation sacramentelle et pèlerinages thématiques pour adultes (à pied, à vélo, ou en commémoration).",
+      "expected_source_uids": [
+        63737721,
+        50152835,
+        43292762,
+        89315349
+      ]
+    },
+    {
+      "id": "q08",
+      "category": "thematic_search",
+      "difficulty": "medium",
+      "question": "Proposez-vous des formations ou catéchèses pour adultes ?",
+      "ground_truth": "Plusieurs formations et catéchèses pour adultes sont proposées : 'Catéchuménat - Néophytat' parcours d'initiation chrétienne pour les adultes souhaitant devenir chrétiens, 'Et toi, que choisis tu ?' parcours de catéchèse en 9 soirées à partir du 10 juin 2026 pour le discernement et les choix de vie, 'CIF - Centre pour l'Intelligence de la Foi' parcours de formation sur deux ans avec cours et groupes d'échange (inscriptions en septembre 2026), 'Soirée je dis de la foi' du 11 juin 2026 sur le thème du Mariage pour catéchumènes, néophytes et confirmands, et 'Comment agir en chrétien dans le monde contemporain ?' trimestre de cours du 30 mars au 22 juin 2026. Ces propositions s'adressent à différents profils d'adultes : néophytes, confirmands, et croyants en cheminement.",
+      "expected_source_uids": [
+        48129879,
+        37881838,
+        39464296,
+        79710793,
+        66620762
+      ]
+    },
+    {
+      "id": "q09",
+      "category": "specific_event",
+      "difficulty": "medium",
+      "question": "Y a-t-il des concerts de musique classique prévus prochainement ?",
+      "ground_truth": "",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q10",
+      "category": "thematic_search",
+      "difficulty": "medium",
+      "question": "Y a-t-il des événements liés à la santé ou au bien-être spirituel ?",
+      "ground_truth": "Plusieurs événements touchent aux questions de santé et de bien-être : 'Burn-out, dépression, désolation spirituelle : distinguer pour mieux accompagner' le 21 novembre 2026 qui aborde la santé mentale dans une perspective d'accompagnement, 'Je crois en moi et mon potentiel !' du 6 juin 2026, un atelier pour adolescents sur l'estime de soi et le bien-être identitaire, et 'Les lois de fin de vie' le 14 juin 2026 avec Laurence Henry qui aborde les enjeux éthiques et de santé liés à la fin de vie. Ces propositions couvrent santé mentale, développement personnel et éthique médicale.",
+      "expected_source_uids": [
+        19948450,
+        63320359,
+        9355153
+      ]
+    },
+    {
+      "id": "q11",
+      "category": "out_of_scope",
+      "difficulty": "easy",
+      "question": "Quels concerts de heavy metal sont prévus à Paris ?",
+      "ground_truth": "Aucun concert de heavy metal n'est référencé dans la base actuelle. Cette base se concentre sur les événements du Diocèse de Paris.",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q12",
+      "category": "out_of_scope",
+      "difficulty": "easy",
+      "question": "Quel temps fera-t-il demain à Paris ?",
+      "ground_truth": "Je n'ai pas trouvé d'événement correspondant à votre demande. Je peux uniquement renseigner sur les événements culturels et spirituels disponibles.",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q13",
+      "category": "ambiguous",
+      "difficulty": "hard",
+      "question": "Que recommandez-vous ?",
+      "ground_truth": "La base contient une diversité d'événements (conférences, temps de prière, formations, retraites). Pour une recommandation précise, merci de préciser votre intérêt ou disponibilité.",
+      "expected_source_uids": []
+    },
+    {
+      "id": "q14",
+      "category": "location_specific",
+      "difficulty": "medium",
+      "question": "Quels événements sont organisés dans le 15e arrondissement de Paris ?",
+      "ground_truth": "Plusieurs événements ont lieu dans le 15e arrondissement de Paris (code postal 75015) : des temps de prière ('Prière du Chapelet' quotidienne à la chapelle Sainte-Geneviève, 'Le jeudi j'adore' adoration hebdomadaire), des événements pour jeunes adultes ('EVEN', 'Rencontre Jeunes Pros et Pros' le 10 juin 2026), des activités pour enfants et familles ('Eveil à la foi', 'Premières Communions des enfants du catéchisme'), des concerts ('Hymne à la paix'), un pèlerinage ('Marche Pèlerinage Au fil de l'eau' le 13 juin 2026), des catéchèses ('Catéchuménat - Néophytat'), et des conférences ('Sainte Marguerite-Marie et Moi', 'Les mardis du dimanche'). Au total, une quinzaine d'événements de natures variées sont organisés dans cet arrondissement.",
+      "expected_source_uids": [
+        64303667,
+        29927390,
+        29381038,
+        68053731,
+        34594617,
+        12830290,
+        73195692,
+        23134533,
+        18817913,
+        89315349,
+        37881838,
+        90917609
+      ]
+    },
+    {
+      "id": "q15",
+      "category": "thematic_search",
+      "difficulty": "medium",
+      "question": "Y a-t-il des événements autour de l'écologie et de la sobriété ?",
+      "ground_truth": "Plusieurs événements abordent les questions d'écologie et de sobriété : 'Médecine, IA et écologie : sobriété ou démesure ?' le 5 juin 2026, un colloque philosophique sur la notion de mesure et les choix technologiques contemporains, 'Dialogue judéo-chrétien sur la crise écologique : présentation du livre La Terre Céleste' le 11 juin 2026 qui croise tradition religieuse et écologie, et 'Réconcilier la Bible avec la Terre : présentation du livre La Terre Céleste' le 10 juin 2026 qui prolonge cette réflexion avec une approche pluridisciplinaire (juriste, géographe). Ces trois propositions articulent réflexion écologique et perspectives spirituelles ou philosophiques.",
+      "expected_source_uids": [
+        84424718,
+        20208717,
+        20670400
+      ]
+    }
+  ]
+}
