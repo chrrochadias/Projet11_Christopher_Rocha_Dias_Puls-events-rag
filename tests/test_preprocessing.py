@@ -173,3 +173,29 @@ class TestExtractMetadata:
         meta = extract_metadata(event)
         assert meta["first_timing_begin"] is None
         assert meta["last_timing_end"] is None
+
+from src.preprocessing import is_in_target_geography
+
+
+class TestIsInTargetGeography:
+    """Filtre géographique : un event hors zone cible est rejeté."""
+
+    def test_event_in_target_city_is_accepted(self):
+        event = {"location": {"city": "Paris", "postalCode": "75015"}}
+        assert is_in_target_geography(event, "Paris") is True
+
+    def test_event_in_other_city_is_rejected(self):
+        event = {"location": {"city": "Mortagne-au-Perche", "postalCode": "61400"}}
+        assert is_in_target_geography(event, "Paris") is False
+
+    def test_event_with_75_postal_code_is_accepted_even_without_city(self):
+        event = {"location": {"postalCode": "75001"}}
+        assert is_in_target_geography(event, "Paris") is True
+
+    def test_event_without_location_is_rejected(self):
+        event = {"title": {"fr": "Concert"}}
+        assert is_in_target_geography(event, "Paris") is False
+
+    def test_city_match_is_case_insensitive(self):
+        event = {"location": {"city": "PARIS", "postalCode": "75001"}}
+        assert is_in_target_geography(event, "paris") is True

@@ -1,6 +1,6 @@
 # =============================================================================
 # Puls-Events RAG - Requirements
-# Python >= 3.10 requis (contrainte langchain-mistralai)
+# Python >= 3.10 requis
 # =============================================================================
 
 # --- LangChain (architecture modulaire depuis v0.2) ---
@@ -17,12 +17,16 @@ requests>=2.31                  # API OpenAgenda
 pandas>=2.0                     # exploration & manipulation tabulaire
 python-dotenv>=1.0              # gestion des secrets (.env)
 
-# --- Tests ---
-pytest>=8.0
+# --- Évaluation RAG ---
+ragas>=0.2,<0.3                 # framework d'évaluation RAG
+datasets>=2.0                   # requis par RAGAS (HuggingFace Dataset)
 
 # --- Visualisation (notebooks EDA & rapport) ---
 matplotlib>=3.8
-seaborn>=0.13       # graphes plus jolis, utile pour le rapport technique
+seaborn>=0.13
+
+# --- Tests ---
+pytest>=8.0
 
 # --- Dev (notebooks) ---
 jupyter

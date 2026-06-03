@@ -19,8 +19,8 @@ from src.config import (
     AGENDA_UID,
     RAW_DIR,
 )
-from src.preprocessing import is_event_embeddable
-
+from src.preprocessing import is_event_embeddable, is_in_target_geography
+from src.config import TARGET_CITY
 
 def fetch_events(
         agenda_uid: int = AGENDA_UID,
@@ -104,9 +104,18 @@ def ingest_agenda(
     raw_events = fetch_events(agenda_uid=agenda_uid, n=n, upcoming_only=True)
     print(f"   → {len(raw_events)} événements bruts récupérés")
 
-    valid_events = [e for e in raw_events if is_event_embeddable(e)]
-    rejected = len(raw_events) - len(valid_events)
-    print(f"   → {len(valid_events)} événements valides ({rejected} rejetés par filtre qualité)")
+    valid_events = [
+        e for e in raw_events
+        if is_event_embeddable(e) and is_in_target_geography(e, TARGET_CITY)
+    ]
+    rejected_quality = sum(1 for e in raw_events if not is_event_embeddable(e))
+    rejected_geo = sum(
+        1 for e in raw_events
+        if is_event_embeddable(e) and not is_in_target_geography(e, TARGET_CITY)
+    )
+
+    print(f"   → {len(valid_events)} événements valides")
+    print(f"     ({rejected_quality} rejetés qualité, {rejected_geo} rejetés géo)")
 
     if save_raw:
         RAW_DIR.mkdir(parents=True, exist_ok=True)

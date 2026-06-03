@@ -63,6 +63,27 @@ def build_embeddable_text(event: dict) -> str:
         return f"{title}\n\n{body}"
     return title or body  # Au pire on a au moins l'un des deux
 
+def is_in_target_geography(event: dict, target_city: str = "Paris") -> bool:
+    """
+    Vérifie qu'un événement se déroule dans la ville cible.
+
+    Critères :
+    - location.city == target_city (insensible à la casse)
+    - OU location.postalCode commence par '75' (Paris intra-muros)
+
+    Un event sans location est REJETÉ (impossible de valider le périmètre).
+    """
+    location = event.get("location") or {}
+    if not isinstance(location, dict):
+        return False
+
+    city = (location.get("city") or "").strip().lower()
+    postal_code = str(location.get("postalCode") or "").strip()
+
+    matches_city = city == target_city.lower()
+    matches_postal = postal_code.startswith("75")
+
+    return matches_city or matches_postal
 
 def extract_metadata(event: dict) -> dict:
     """
