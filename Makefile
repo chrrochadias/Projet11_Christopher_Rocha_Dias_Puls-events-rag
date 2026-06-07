@@ -5,7 +5,7 @@
 # ============================================================
 
 # Variables
-PYTHON := python
+PYTHON := python3
 PIP := pip
 VENV := venv
 SRC_DIR := src
@@ -122,6 +122,10 @@ clean-index: ## Supprimer l'index FAISS (force la reconstruction au prochain bui
 
 .PHONY: clean-all
 clean-all: clean clean-index ## Nettoyage complet (cache Python + index FAISS)
+
+.PHONY: ui
+ui: ## Lancer l'interface chat Streamlit (http://localhost:8501)
+	streamlit run app.py
 
 # ============================================================
 # Aide

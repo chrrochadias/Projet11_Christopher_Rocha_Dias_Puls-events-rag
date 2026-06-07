@@ -157,6 +157,16 @@ python scripts/build_index.py --refresh
 
 # Limiter le nombre d'événements
 python scripts/build_index.py --n 100
+
+### Lancer l'interface web
+
+```bash
+make ui
+# ou directement :
+streamlit run app.py
+```
+
+L'interface est accessible sur `http://localhost:8501`. Elle propose un chat conversationnel avec historique, suggestions de questions, et affichage des sources utilisées pour chaque réponse.
 ```
 
 ### Interroger le RAG

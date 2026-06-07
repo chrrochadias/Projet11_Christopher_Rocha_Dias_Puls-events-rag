@@ -31,3 +31,6 @@ pytest>=8.0
 # --- Dev (notebooks) ---
 jupyter
 ipykernel
+
+# --- Interface web ---
+streamlit>=1.30
